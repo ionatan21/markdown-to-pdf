@@ -1,11 +1,12 @@
 import type { FC } from 'react';
-import { FileText, Download } from 'lucide-react';
+import { FileText, Download, Loader2 } from 'lucide-react';
 
 interface TopBarProps {
   onExport?: () => void;
+  isExporting?: boolean;
 }
 
-const TopBar: FC<TopBarProps> = ({ onExport }) => {
+const TopBar: FC<TopBarProps> = ({ onExport, isExporting = false }) => {
   return (
     <header className="h-16 bg-white border-b border-gray-200/60 sticky top-0 z-30 shadow-sm/30">
       <div className="h-full px-6 flex items-center justify-between">
@@ -23,11 +24,25 @@ const TopBar: FC<TopBarProps> = ({ onExport }) => {
           {onExport && (
             <button
               onClick={onExport}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors duration-150 text-sm font-medium"
-              title="Exportar a PDF"
+              disabled={isExporting}
+              className={`flex items-center gap-2 px-4 py-2 ${
+                isExporting
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gray-900 hover:bg-gray-800'
+              } text-white rounded-lg transition-colors duration-150 text-sm font-medium`}
+              title={isExporting ? 'Exporting...' : 'Export to PDF'}
             >
-              <Download size={16} />
-              <span className="hidden sm:inline">Export PDF</span>
+              {isExporting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span className="hidden sm:inline">Exporting...</span>
+                </>
+              ) : (
+                <>
+                  <Download size={16} />
+                  <span className="hidden sm:inline">Export PDF</span>
+                </>
+              )}
             </button>
           )}
         </div>
