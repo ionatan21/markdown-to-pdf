@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+@config "../tailwind.config.js";
+
+/* More specific reset that doesn't interfere with Tailwind utilities */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333333;
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Custom utility class for hiding scrollbars */
+@layer utilities {
+  .scrollbar-hide {
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    display: none;
+  }
+}
+
+/* Custom slider styles */
+@layer components {
+  .slider {
+    background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--slider-progress, 50%), #e5e7eb var(--slider-progress, 50%), #e5e7eb 100%);
+  }
+
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+
+  .slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+  }
+
+  .slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+
+  .slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+  }
+}
+
+/* Preview Panel Markdown Styles */
+.preview-content h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.preview-content h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+.preview-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.preview-content h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.preview-content h5 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+  color: #374151;
+}
+
+.preview-content h6 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+  color: #4b5563;
+}
+
+.preview-content p {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.75;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.preview-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.preview-content a:hover {
+  color: #1e40af;
+}
+
+.preview-content strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+.preview-content em {
+  font-style: italic;
+}
+
+.preview-content code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background-color: #f3f4f6;
+  color: #dc2626;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  border: 1px solid #e5e7eb;
+}
+
+.preview-content pre {
+  background-color: #111827;
+  color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #374151;
+}
+
+.preview-content pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+}
+
+.preview-content blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #374151;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.preview-content ul,
+.preview-content ol {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  margin-left: 1.5rem;
+}
+
+.preview-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.75;
+}
+
+.preview-content table {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  border: 1px solid #d1d5db;
+}
+
+.preview-content th {
+  background-color: #e5e7eb;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #d1d5db;
+}
+
+.preview-content td {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+}
+
+.preview-content hr {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: none;
+  border-top: 2px solid #d1d5db;
+}
+
+.preview-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
