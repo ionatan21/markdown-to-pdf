@@ -71,15 +71,15 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
 
   return (
     <div>
-      <div className="bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-xl shadow-lg p-4">
-        <div className="flex items-center justify-between gap-6">
+      <div className="bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-lg shadow-sm p-3 md:p-4">
+        <div className="flex flex-wrap items-end gap-3 md:gap-6">
 
           {/* Font Family Selector */}
-          <div className="relative" ref={fontPickerRef}>
+          <div className="relative flex-1 min-w-[9rem] sm:flex-none" ref={fontPickerRef}>
             <label className="block text-xs font-medium text-gray-600 mb-1">Font Family</label>
             <button
               onClick={() => setIsFontPickerOpen(!isFontPickerOpen)}
-              className="flex items-center justify-between w-36 h-9 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-150"
+              className="flex items-center justify-between w-full sm:w-36 h-10 md:h-9 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-150"
             >
               <span className="text-sm font-medium truncate" style={{ fontFamily: currentFont.value }}>
                 {currentFont.label}
@@ -110,16 +110,16 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
           </div>
 
           {/* Font Size Control */}
-          <div className="flex flex-col items-center">
+          <div className="flex-1 min-w-[11rem] sm:flex-none flex flex-col">
             <label className="block text-xs font-medium text-gray-600 mb-1">Font Size</label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 h-10 md:h-9">
               <input
                 type="range"
                 min="12"
                 max="24"
                 value={currentFontSize}
                 onChange={(e) => onFontSizeChange(parseInt(e.target.value))}
-                className="w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                className="w-full sm:w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{ '--slider-progress': `${sliderProgress}%` } as React.CSSProperties}
               />
               <span className="text-sm font-medium text-gray-700 w-8 text-center">
@@ -134,7 +134,7 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
             <label className="block text-xs font-medium text-gray-600 mb-1">Text Color</label>
             <button
               onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
-              className="flex items-center justify-center w-9 h-9 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-colors duration-150"
+              className="flex items-center justify-center w-10 h-10 md:w-9 md:h-9 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-colors duration-150"
               style={{ backgroundColor: currentTextColor }}
               title="Change text color"
             >
@@ -180,7 +180,7 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
             <label className="block text-xs font-medium text-gray-600 mb-1">Reset</label>
             <button
               onClick={handleReset}
-              className="flex items-center justify-center w-9 h-9 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-150"
+              className="flex items-center justify-center w-10 h-10 md:w-9 md:h-9 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-150"
               title="Reset to defaults"
             >
               <RotateCcw size={16} />

@@ -1,2 +1,12 @@
-/* App CSS - Minimal, styles handled by Tailwind */
+.responsive-editor-pane,
+.responsive-preview-pane {
+  width: 100%;
+  flex-shrink: 0;
+}
 
+@media (min-width: 768px) {
+  .responsive-editor-pane,
+  .responsive-preview-pane {
+    width: var(--panel-width);
+  }
+}

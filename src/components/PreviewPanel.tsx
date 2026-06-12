@@ -34,10 +34,10 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
     <div className="w-full h-full flex flex-col bg-white">
       {/* Toolbar toggle section */}
       {!isToolbarVisible && (
-        <div className="w-full bg-white border-b border-gray-200/30 px-12 py-2 flex-shrink-0">
+        <div className="w-full bg-white border-b border-gray-200/30 px-4 md:px-12 py-2 flex-shrink-0">
           <button
             onClick={() => setIsToolbarVisible(true)}
-            className="p-1 hover:bg-gray-100 rounded transition-colors duration-150"
+            className="h-9 w-9 flex items-center justify-center hover:bg-gray-100 rounded transition-colors duration-150"
             title="Show toolbar"
           >
             <ChevronDown size={18} className="text-gray-500" />
@@ -48,9 +48,9 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
       {/* Sticky toolbar section (not part of scroll) */}
       {isToolbarVisible && (
         <div className="w-full bg-white border-b border-gray-200/30 flex-shrink-0">
-          <div className="w-full px-12 pt-6 pb-3">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex-1 max-w-4xl">
+          <div className="w-full px-4 md:px-12 pt-3 md:pt-6 pb-3">
+            <div className="flex items-start justify-between gap-2 md:gap-4">
+              <div className="flex-1 min-w-0 max-w-4xl">
                 <PreviewToolbar
                   onFontFamilyChange={setFontFamily}
                   onFontSizeChange={setFontSize}
@@ -62,7 +62,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
               </div>
               <button
                 onClick={() => setIsToolbarVisible(false)}
-                className="p-1 hover:bg-gray-100 rounded transition-colors duration-150 flex-shrink-0"
+                className="h-9 w-9 flex items-center justify-center hover:bg-gray-100 rounded transition-colors duration-150 flex-shrink-0"
                 title="Hide toolbar"
               >
                 <ChevronUp size={18} className="text-gray-500" />
@@ -74,7 +74,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
 
       {/* Scrollable content section */}
       <div className="w-full flex-1 overflow-y-auto">
-        <div className="w-full max-w-4xl mx-auto px-12 py-12">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-12 py-6 md:py-12">
           <div className="preview-content" ref={contentRef}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}

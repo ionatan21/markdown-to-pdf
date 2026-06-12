@@ -25,7 +25,7 @@ const EditorPanel: FC<EditorPanelProps> = ({ value, onChange, editorRef }) => {
   return (
     <div className="w-full h-full flex flex-col bg-gray-900 border-r border-gray-700">
       <FormattingToolbar editorRef={editorRef} />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden pb-16 sm:pb-0">
         <Editor
           height="100%"
           language="markdown"
