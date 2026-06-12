@@ -1,12 +1,19 @@
 import type { FC } from 'react';
-import { FileText, Download, Loader2 } from 'lucide-react';
+import { FileText, Download, Loader2, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 interface TopBarProps {
   onExport?: () => void;
   isExporting?: boolean;
+  onToggleEditor?: () => void;
+  isEditorVisible?: boolean;
 }
 
-const TopBar: FC<TopBarProps> = ({ onExport, isExporting = false }) => {
+const TopBar: FC<TopBarProps> = ({
+  onExport,
+  isExporting = false,
+  onToggleEditor,
+  isEditorVisible = true,
+}) => {
   return (
     <header className="h-16 bg-white border-b border-gray-200/60 sticky top-0 z-30 shadow-sm/30">
       <div className="h-full px-6 flex items-center justify-between">
@@ -20,7 +27,21 @@ const TopBar: FC<TopBarProps> = ({ onExport, isExporting = false }) => {
         </div>
 
         {/* Right Section - Actions */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-3">
+          {onToggleEditor && (
+            <button
+              onClick={onToggleEditor}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-150"
+              title={isEditorVisible ? 'Hide editor' : 'Show editor'}
+            >
+              {isEditorVisible ? (
+                <PanelLeftClose size={18} className="text-gray-600" />
+              ) : (
+                <PanelLeftOpen size={18} className="text-gray-600" />
+              )}
+            </button>
+          )}
+
           {onExport && (
             <button
               onClick={onExport}

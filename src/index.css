@@ -236,6 +236,8 @@ body {
   margin-top: 1rem;
   margin-bottom: 1rem;
   border: 1px solid #374151;
+  page-break-inside: auto;
+  break-inside: auto;
 }
 
 .preview-content pre code {
@@ -301,4 +303,94 @@ body {
   border-radius: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+/* PDF Page Break Rules - Prevent text from being cut horizontally */
+.preview-content h1,
+.preview-content h2,
+.preview-content h3,
+.preview-content h4,
+.preview-content h5,
+.preview-content h6 {
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+.preview-content p {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  orphans: 4;
+  widows: 4;
+  display: block;
+  min-height: auto;
+}
+
+.preview-content li {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  orphans: 3;
+  widows: 3;
+  display: list-item;
+}
+
+.preview-content blockquote {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  page-break-before: avoid;
+  break-before: avoid;
+  display: block;
+  min-height: auto;
+}
+
+.preview-content table {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  display: table;
+}
+
+.preview-content table tr {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.preview-content table tbody {
+  page-break-inside: auto;
+}
+
+.preview-content pre {
+  page-break-inside: auto !important;
+  break-inside: auto !important;
+  orphans: 2 !important;
+  widows: 2 !important;
+  page-break-before: avoid !important;
+  break-before: avoid !important;
+  box-decoration-break: clone !important;
+  -webkit-box-decoration-break: clone !important;
+  overflow: visible !important;
+  white-space: pre !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+.preview-content code {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Prevent elements from being cut at page edges */
+.preview-content ul,
+.preview-content ol {
+  page-break-inside: auto;
+  break-inside: auto;
+  display: block;
+}
+
+/* Ensure no overflow-hidden creates rendering artifacts */
+.preview-content {
+  overflow: visible !important;
 }

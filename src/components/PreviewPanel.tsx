@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { useState } from 'react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import PreviewToolbar from './PreviewToolbar';
@@ -14,6 +15,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
   const [fontFamily, setFontFamily] = useState('system-ui, -apple-system, sans-serif');
   const [fontSize, setFontSize] = useState(16);
   const [textColor, setTextColor] = useState('#111827');
+  const [isToolbarVisible, setIsToolbarVisible] = useState(true);
 
   // Base typography styles that will be applied to all text elements
   const baseTextStyles = {
@@ -30,19 +32,45 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
-      {/* Sticky toolbar section (not part of scroll) */}
-      <div className="w-full bg-white border-b border-gray-200/30 flex-shrink-0">
-        <div className="w-full max-w-4xl mx-auto px-12 pt-6 pb-3">
-          <PreviewToolbar
-            onFontFamilyChange={setFontFamily}
-            onFontSizeChange={setFontSize}
-            onTextColorChange={setTextColor}
-            currentFontFamily={fontFamily}
-            currentFontSize={fontSize}
-            currentTextColor={textColor}
-          />
+      {/* Toolbar toggle section */}
+      {!isToolbarVisible && (
+        <div className="w-full bg-white border-b border-gray-200/30 px-12 py-2 flex-shrink-0">
+          <button
+            onClick={() => setIsToolbarVisible(true)}
+            className="p-1 hover:bg-gray-100 rounded transition-colors duration-150"
+            title="Show toolbar"
+          >
+            <ChevronDown size={18} className="text-gray-500" />
+          </button>
         </div>
-      </div>
+      )}
+
+      {/* Sticky toolbar section (not part of scroll) */}
+      {isToolbarVisible && (
+        <div className="w-full bg-white border-b border-gray-200/30 flex-shrink-0">
+          <div className="w-full px-12 pt-6 pb-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1 max-w-4xl">
+                <PreviewToolbar
+                  onFontFamilyChange={setFontFamily}
+                  onFontSizeChange={setFontSize}
+                  onTextColorChange={setTextColor}
+                  currentFontFamily={fontFamily}
+                  currentFontSize={fontSize}
+                  currentTextColor={textColor}
+                />
+              </div>
+              <button
+                onClick={() => setIsToolbarVisible(false)}
+                className="p-1 hover:bg-gray-100 rounded transition-colors duration-150 flex-shrink-0"
+                title="Hide toolbar"
+              >
+                <ChevronUp size={18} className="text-gray-500" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Scrollable content section */}
       <div className="w-full flex-1 overflow-y-auto">
