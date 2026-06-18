@@ -148,7 +148,7 @@ const HeadingsDropdown: FC<{
         <div
           ref={menuRef}
           role="menu"
-          className="fixed bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100] min-w-[140px]"
+          className="fixed w-40 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]"
           style={{
             top: `${menuPosition.top}px`,
             left: `${menuPosition.left}px`,
