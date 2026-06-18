@@ -8,6 +8,7 @@ import PreviewToolbar from './PreviewToolbar';
 interface PreviewPanelProps {
   markdown: string;
   contentRef?: React.RefObject<HTMLDivElement | null>;
+  scrollContainerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 interface MarkdownRendererProps {
@@ -17,7 +18,11 @@ interface MarkdownRendererProps {
   alt?: string;
 }
 
-const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
+const PreviewPanel: FC<PreviewPanelProps> = ({
+  markdown,
+  contentRef,
+  scrollContainerRef,
+}) => {
   // Typography customization state
   const [fontFamily, setFontFamily] = useState('system-ui, -apple-system, sans-serif');
   const [fontSize, setFontSize] = useState(16);
@@ -342,7 +347,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ markdown, contentRef }) => {
       )}
 
       {/* Scrollable content section */}
-      <div className="w-full flex-1 overflow-y-auto">
+      <div ref={scrollContainerRef} className="w-full flex-1 overflow-y-auto">
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-12 py-6 md:py-12">
           <div className="preview-content" ref={contentRef}>
             <ReactMarkdown

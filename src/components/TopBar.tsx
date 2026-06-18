@@ -29,7 +29,7 @@ const TopBar: FC<TopBarProps> = ({
             alt="Markdown Preview"
             className="w-10 h-10 md:w-7 md:h-10 object-cover flex-shrink-0"
           />
-          <h1 className="text-base md:text-lg font-medium text-gray-900 truncate">Markdown Preview</h1>
+          <h1 className="text-base md:text-lg font-medium text-gray-900 truncate">Markdown to PDF</h1>
         </div>
 
         {/* Right Section - Actions */}

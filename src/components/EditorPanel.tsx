@@ -7,9 +7,15 @@ interface EditorPanelProps {
   value: string;
   onChange: (value: string) => void;
   editorRef?: React.MutableRefObject<editor.IStandaloneCodeEditor | null>;
+  onEditorMount?: () => void;
 }
 
-const EditorPanel: FC<EditorPanelProps> = ({ value, onChange, editorRef }) => {
+const EditorPanel: FC<EditorPanelProps> = ({
+  value,
+  onChange,
+  editorRef,
+  onEditorMount,
+}) => {
   const handleEditorChange = (newValue: string | undefined) => {
     if (newValue !== undefined) {
       onChange(newValue);
@@ -20,6 +26,7 @@ const EditorPanel: FC<EditorPanelProps> = ({ value, onChange, editorRef }) => {
     if (editorRef) {
       editorRef.current = editor;
     }
+    onEditorMount?.();
   };
 
   return (
