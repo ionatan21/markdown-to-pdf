@@ -1,9 +1,9 @@
 import type { FC, ReactNode } from 'react';
-import { useState } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import PreviewToolbar from './PreviewToolbar';
+import { DEFAULT_PREVIEW_THEME } from '../types/previewTheme';
 
 interface PreviewPanelProps {
   markdown: string;
@@ -23,17 +23,48 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   contentRef,
   scrollContainerRef,
 }) => {
-  // Typography customization state
-  const [fontFamily, setFontFamily] = useState('system-ui, -apple-system, sans-serif');
-  const [fontSize, setFontSize] = useState(16);
-  const [textColor, setTextColor] = useState('#111827');
-  const [isToolbarVisible, setIsToolbarVisible] = useState(true);
+  const [theme, setTheme] = useState(DEFAULT_PREVIEW_THEME);
+  const [isToolbarExpanded, setIsToolbarExpanded] = useState(true);
+  const isToolbarManuallyCollapsedRef = useRef(false);
+
+  const { fontFamily, fontSize, colors } = theme;
 
   // Base typography styles that will be applied to all text elements
   const baseTextStyles = {
     fontFamily,
     fontSize: `${fontSize}px`,
-    color: textColor,
+    color: colors.body,
+  };
+
+  const headingTextStyles = {
+    ...baseTextStyles,
+    color: colors.heading,
+  };
+
+  const tableTextStyles = {
+    ...baseTextStyles,
+    color: colors.table,
+  };
+
+  const handlePreviewScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = event.currentTarget.scrollTop;
+
+    if (scrollTop > 96) {
+      setIsToolbarExpanded(false);
+    } else if (scrollTop < 8 && !isToolbarManuallyCollapsedRef.current) {
+      setIsToolbarExpanded(true);
+    }
+  };
+
+  const handlePreviewWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (event.deltaY > 0) {
+      setIsToolbarExpanded(false);
+    }
+  };
+
+  const handleToolbarExpandedChange = (nextIsExpanded: boolean) => {
+    isToolbarManuallyCollapsedRef.current = !nextIsExpanded;
+    setIsToolbarExpanded(nextIsExpanded);
   };
 
   // Scale factors for different heading levels
@@ -47,7 +78,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <h1
         className="font-bold mt-8 mb-4"
         style={{
-          ...baseTextStyles,
+          ...headingTextStyles,
           fontSize: getHeadingSize(1),
           fontWeight: 'bold',
           marginTop: `${fontSize * 2}px`,
@@ -61,7 +92,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <h2
         className="font-bold mt-6 mb-3"
         style={{
-          ...baseTextStyles,
+          ...headingTextStyles,
           fontSize: getHeadingSize(2),
           fontWeight: 'bold',
           marginTop: `${fontSize * 1.5}px`,
@@ -75,7 +106,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <h3
         className="font-bold mt-5 mb-2"
         style={{
-          ...baseTextStyles,
+          ...headingTextStyles,
           fontSize: getHeadingSize(3),
           fontWeight: 'bold',
           marginTop: `${fontSize * 1.25}px`,
@@ -89,7 +120,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <h4
         className="font-bold mt-4 mb-2"
         style={{
-          ...baseTextStyles,
+          ...headingTextStyles,
           fontSize: getHeadingSize(4),
           fontWeight: 'bold',
           marginTop: `${fontSize}px`,
@@ -103,7 +134,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <h5
         className="font-bold mt-3 mb-1"
         style={{
-          ...baseTextStyles,
+          ...headingTextStyles,
           fontSize: getHeadingSize(5),
           fontWeight: 'bold',
           marginTop: `${fontSize * 0.75}px`,
@@ -117,7 +148,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <h6
         className="font-bold mt-3 mb-1"
         style={{
-          ...baseTextStyles,
+          ...headingTextStyles,
           fontSize: getHeadingSize(6),
           fontWeight: 'bold',
           marginTop: `${fontSize * 0.75}px`,
@@ -249,6 +280,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <table
         className="w-full border-collapse border border-gray-300"
         style={{
+          color: colors.table,
           marginTop: `${fontSize}px`,
           marginBottom: `${fontSize}px`,
         }}
@@ -263,7 +295,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <th
         className="bg-gray-200 text-left font-semibold border border-gray-300"
         style={{
-          ...baseTextStyles,
+          ...tableTextStyles,
           fontWeight: '600',
           padding: `${fontSize * 0.5}px ${fontSize}px`,
         }}
@@ -275,7 +307,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       <td
         className="border border-gray-300"
         style={{
-          ...baseTextStyles,
+          ...tableTextStyles,
           padding: `${fontSize * 0.5}px ${fontSize}px`,
         }}
       >
@@ -306,48 +338,20 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
-      {/* Toolbar toggle section */}
-      {!isToolbarVisible && (
-        <div className="w-full bg-white border-b border-gray-200/30 px-4 md:px-12 py-2 flex-shrink-0">
-          <button
-            onClick={() => setIsToolbarVisible(true)}
-            className="h-9 w-9 flex items-center justify-center hover:bg-gray-100 rounded transition-colors duration-150"
-            title="Show toolbar"
-          >
-            <ChevronDown size={18} className="text-gray-500" />
-          </button>
-        </div>
-      )}
-
-      {/* Sticky toolbar section (not part of scroll) */}
-      {isToolbarVisible && (
-        <div className="w-full bg-white border-b border-gray-200/30 flex-shrink-0">
-          <div className="w-full px-4 md:px-12 pt-3 md:pt-6 pb-3">
-            <div className="flex items-start justify-between gap-2 md:gap-4">
-              <div className="flex-1 min-w-0 max-w-4xl">
-                <PreviewToolbar
-                  onFontFamilyChange={setFontFamily}
-                  onFontSizeChange={setFontSize}
-                  onTextColorChange={setTextColor}
-                  currentFontFamily={fontFamily}
-                  currentFontSize={fontSize}
-                  currentTextColor={textColor}
-                />
-              </div>
-              <button
-                onClick={() => setIsToolbarVisible(false)}
-                className="h-9 w-9 flex items-center justify-center hover:bg-gray-100 rounded transition-colors duration-150 flex-shrink-0"
-                title="Hide toolbar"
-              >
-                <ChevronUp size={18} className="text-gray-500" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PreviewToolbar
+        theme={theme}
+        isExpanded={isToolbarExpanded}
+        onThemeChange={setTheme}
+        onExpandedChange={handleToolbarExpandedChange}
+      />
 
       {/* Scrollable content section */}
-      <div ref={scrollContainerRef} className="w-full flex-1 overflow-y-auto">
+      <div
+        ref={scrollContainerRef}
+        onScroll={handlePreviewScroll}
+        onWheel={handlePreviewWheel}
+        className="w-full flex-1 overflow-y-auto"
+      >
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-12 py-6 md:py-12">
           <div className="preview-content" ref={contentRef}>
             <ReactMarkdown

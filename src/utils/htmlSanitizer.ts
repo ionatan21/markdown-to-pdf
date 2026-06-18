@@ -15,6 +15,7 @@ const PAGE_BREAK_SPACER_CLASS = 'pdf-page-break-spacer';
  * Crea un clon HTML simplificado con mejor manejo de page breaks
  */
 export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement {
+  const containerStyles = window.getComputedStyle(container);
   const clone = document.createElement('div');
   clone.style.cssText = `
     width: ${A4_PRINTABLE_WIDTH_PX}px;
@@ -23,9 +24,9 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
     box-sizing: border-box;
     overflow: visible;
     background-color: white;
-    color: #111827;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 14px;
+    color: ${containerStyles.color || '#111827'};
+    font-family: ${containerStyles.fontFamily || "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"};
+    font-size: ${containerStyles.fontSize || '14px'};
     line-height: 1.6;
     overflow-wrap: anywhere;
     word-break: normal;
@@ -190,6 +191,15 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
         }
 
         const targetHtmlElement = targetEl as HTMLElement;
+        const sourceHtmlElement = sourceEl as HTMLElement;
+        const computedStyle = window.getComputedStyle(sourceHtmlElement);
+
+        if (shouldPreserveDocumentTypography(tagName)) {
+          targetHtmlElement.style.color = computedStyle.color;
+          targetHtmlElement.style.fontFamily = computedStyle.fontFamily;
+          targetHtmlElement.style.fontSize = computedStyle.fontSize;
+        }
+
         targetHtmlElement.style.maxWidth = '100%';
         targetHtmlElement.style.boxSizing = 'border-box';
         targetHtmlElement.style.overflowWrap = 'anywhere';
@@ -203,6 +213,31 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
   copyWithSimplifiedStyles(container, clone);
 
   return clone;
+}
+
+function shouldPreserveDocumentTypography(tagName: string): boolean {
+  return [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'p',
+    'a',
+    'strong',
+    'em',
+    'blockquote',
+    'ul',
+    'ol',
+    'li',
+    'table',
+    'thead',
+    'tbody',
+    'tr',
+    'th',
+    'td',
+  ].includes(tagName);
 }
 
 export function addSmartPageBreaks(container: HTMLElement): void {

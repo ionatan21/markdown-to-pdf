@@ -1,4 +1,4 @@
-export const DEFAULT_MARKDOWN = `# Welcome to Markdown Preview
+export const DEFAULT_MARKDOWN = `# Welcome to Markdown to PDF!
 
 ## Features
 - 🎨 **Real-time preview** with live rendering
