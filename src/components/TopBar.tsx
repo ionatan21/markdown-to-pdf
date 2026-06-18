@@ -34,6 +34,23 @@ const TopBar: FC<TopBarProps> = ({
 
         {/* Right Section - Actions */}
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+          <a
+            href="https://portfolio-jonatan-barrios.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900 sm:w-auto sm:gap-2 sm:px-3"
+            title="Author portfolio"
+            aria-label="Author portfolio"
+          >
+            <img
+              src="/JB-logo.svg"
+              alt=""
+              className="h-5 w-5 flex-shrink-0"
+              aria-hidden="true"
+            />
+            <span className="hidden lg:inline">Portfolio</span>
+          </a>
+
           {onToggleEditor && (
             <button
               onClick={onToggleEditor}
