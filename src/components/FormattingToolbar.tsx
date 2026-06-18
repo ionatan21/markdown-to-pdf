@@ -1,7 +1,8 @@
 import type { FC } from 'react';
 import type { LucideProps } from 'lucide-react';
 import type { editor } from 'monaco-editor';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Bold,
   Italic,
@@ -55,11 +56,27 @@ const HeadingsDropdown: FC<{
   onSelect: (level: number) => void;
 }> = ({ onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const updateMenuPosition = useCallback(() => {
+    if (!dropdownRef.current) return;
+
+    const buttonRect = dropdownRef.current.getBoundingClientRect();
+    setMenuPosition({
+      top: buttonRect.bottom + 4,
+      left: buttonRect.left,
+    });
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedTrigger = dropdownRef.current?.contains(target);
+      const clickedMenu = menuRef.current?.contains(target);
+
+      if (!clickedTrigger && !clickedMenu) {
         setIsOpen(false);
       }
     };
@@ -69,6 +86,32 @@ const HeadingsDropdown: FC<{
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    updateMenuPosition();
+
+    const handleWindowChange = () => {
+      updateMenuPosition();
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleWindowChange);
+    window.addEventListener('scroll', handleWindowChange, true);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      window.removeEventListener('resize', handleWindowChange);
+      window.removeEventListener('scroll', handleWindowChange, true);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, updateMenuPosition]);
 
   const headingOptions = [
     { level: 1, label: 'Heading 1', preview: 'text-2xl font-bold' },
@@ -84,9 +127,14 @@ const HeadingsDropdown: FC<{
   return (
     <div ref={dropdownRef} className="relative">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          updateMenuPosition();
+          setIsOpen(!isOpen);
+        }}
         className="group relative w-9 h-9 rounded-lg transition-colors duration-150 cursor-pointer flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900"
         aria-label="Insert heading"
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
         title="Insert heading"
       >
         <Heading size={18} />
@@ -96,18 +144,29 @@ const HeadingsDropdown: FC<{
         </span>
       </button>
 
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50 min-w-[140px]">
+      {isOpen && createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          className="fixed bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100] min-w-[140px]"
+          style={{
+            top: `${menuPosition.top}px`,
+            left: `${menuPosition.left}px`,
+          }}
+        >
           {headingOptions.map(({ level, label, preview }) => (
             <button
               key={level}
+              type="button"
+              role="menuitem"
               onClick={() => handleSelect(level)}
               className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors duration-150"
             >
               <div className={`${preview} text-gray-900`}>{label}</div>
             </button>
           ))}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
