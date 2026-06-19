@@ -1,6 +1,16 @@
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { Palette, RotateCcw, Settings2, Type, X } from 'lucide-react';
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Palette,
+  RotateCcw,
+  Settings2,
+  Type,
+  X,
+} from 'lucide-react';
 import type { PreviewTheme } from '../types/previewTheme';
 import { DEFAULT_PREVIEW_THEME } from '../types/previewTheme';
 
@@ -12,6 +22,7 @@ interface PreviewToolbarProps {
 }
 
 type ColorTarget = keyof PreviewTheme['colors'];
+type TextAlignOption = PreviewTheme['textAlign'];
 
 const fontFamilies = [
   { name: 'Inter', value: 'system-ui, -apple-system, sans-serif' },
@@ -34,6 +45,17 @@ const presetColors = [
   { name: 'Blue', value: '#2563eb' },
   { name: 'Green', value: '#059669' },
   { name: 'Violet', value: '#7c3aed' },
+];
+
+const alignmentControls: Array<{
+  icon: typeof AlignLeft;
+  label: string;
+  value: TextAlignOption;
+}> = [
+  { icon: AlignLeft, label: 'Align left', value: 'left' },
+  { icon: AlignCenter, label: 'Align center', value: 'center' },
+  { icon: AlignRight, label: 'Align right', value: 'right' },
+  { icon: AlignJustify, label: 'Justify', value: 'justify' },
 ];
 
 const PreviewToolbar: FC<PreviewToolbarProps> = ({
@@ -271,6 +293,28 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
                   )}
                 </div>
               ))}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-medium text-gray-600">Alignment</span>
+              <div className="flex h-9 items-center gap-1 rounded border border-gray-200 bg-gray-50 p-1">
+                {alignmentControls.map(({ icon: Icon, label, value }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateTheme({ textAlign: value })}
+                    className={`flex h-7 w-8 items-center justify-center rounded transition-colors duration-150 ${
+                      theme.textAlign === value
+                        ? 'bg-white text-gray-950 shadow-sm'
+                        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+                    }`}
+                    aria-pressed={theme.textAlign === value}
+                    title={label}
+                  >
+                    <Icon size={16} />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           </div>

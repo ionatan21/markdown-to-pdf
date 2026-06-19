@@ -257,6 +257,7 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
           targetHtmlElement.style.color = computedStyle.color;
           targetHtmlElement.style.fontFamily = computedStyle.fontFamily;
           targetHtmlElement.style.fontSize = computedStyle.fontSize;
+          targetHtmlElement.style.textAlign = computedStyle.textAlign;
         }
 
         targetHtmlElement.style.maxWidth = '100%';

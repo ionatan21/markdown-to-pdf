@@ -63,6 +63,9 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   const isToolbarManuallyExpandedRef = useRef(false);
 
   const { fontFamily, fontSize, colors } = theme;
+  const textAlignStyles = useMemo(() => ({
+    textAlign: theme.textAlign,
+  }), [theme.textAlign]);
 
   // Base typography styles that will be applied to all text elements
   const baseTextStyles = useMemo(() => ({
@@ -123,6 +126,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="font-bold mt-8 mb-4"
         style={{
           ...headingTextStyles,
+          ...textAlignStyles,
           fontSize: getHeadingSize(1),
           fontWeight: 'bold',
           marginTop: `${fontSize * 2}px`,
@@ -137,6 +141,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="font-bold mt-6 mb-3"
         style={{
           ...headingTextStyles,
+          ...textAlignStyles,
           fontSize: getHeadingSize(2),
           fontWeight: 'bold',
           marginTop: `${fontSize * 1.5}px`,
@@ -151,6 +156,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="font-bold mt-5 mb-2"
         style={{
           ...headingTextStyles,
+          ...textAlignStyles,
           fontSize: getHeadingSize(3),
           fontWeight: 'bold',
           marginTop: `${fontSize * 1.25}px`,
@@ -165,6 +171,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="font-bold mt-4 mb-2"
         style={{
           ...headingTextStyles,
+          ...textAlignStyles,
           fontSize: getHeadingSize(4),
           fontWeight: 'bold',
           marginTop: `${fontSize}px`,
@@ -179,6 +186,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="font-bold mt-3 mb-1"
         style={{
           ...headingTextStyles,
+          ...textAlignStyles,
           fontSize: getHeadingSize(5),
           fontWeight: 'bold',
           marginTop: `${fontSize * 0.75}px`,
@@ -193,6 +201,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="font-bold mt-3 mb-1"
         style={{
           ...headingTextStyles,
+          ...textAlignStyles,
           fontSize: getHeadingSize(6),
           fontWeight: 'bold',
           marginTop: `${fontSize * 0.75}px`,
@@ -207,6 +216,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="leading-relaxed"
         style={{
           ...baseTextStyles,
+          ...textAlignStyles,
           lineHeight: 1.75,
           marginTop: `${fontSize * 0.75}px`,
           marginBottom: `${fontSize * 0.75}px`,
@@ -303,6 +313,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="border-l-4 border-blue-500 italic"
         style={{
           ...baseTextStyles,
+          ...textAlignStyles,
           paddingLeft: `${fontSize}px`,
           marginTop: `${fontSize}px`,
           marginBottom: `${fontSize}px`,
@@ -319,6 +330,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="list-disc list-inside"
         style={{
           ...baseTextStyles,
+          ...textAlignStyles,
           marginTop: `${fontSize * 0.75}px`,
           marginBottom: `${fontSize * 0.75}px`,
           marginLeft: `${fontSize * 1.5}px`,
@@ -332,6 +344,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="list-decimal list-inside"
         style={{
           ...baseTextStyles,
+          ...textAlignStyles,
           marginTop: `${fontSize * 0.75}px`,
           marginBottom: `${fontSize * 0.75}px`,
           marginLeft: `${fontSize * 1.5}px`,
@@ -345,6 +358,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="leading-relaxed"
         style={{
           ...baseTextStyles,
+          ...textAlignStyles,
           marginBottom: `${fontSize * 0.5}px`,
           lineHeight: 1.75,
         }}
@@ -357,6 +371,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="w-full border-collapse border border-gray-300"
         style={{
           color: colors.table,
+          ...textAlignStyles,
           marginTop: `${fontSize}px`,
           marginBottom: `${fontSize}px`,
         }}
@@ -372,6 +387,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="bg-gray-200 text-left font-semibold border border-gray-300"
         style={{
           ...tableTextStyles,
+          ...textAlignStyles,
           fontWeight: '600',
           padding: `${fontSize * 0.5}px ${fontSize}px`,
         }}
@@ -384,6 +400,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         className="border border-gray-300"
         style={{
           ...tableTextStyles,
+          ...textAlignStyles,
           padding: `${fontSize * 0.5}px ${fontSize}px`,
         }}
       >
@@ -421,6 +438,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
     getHeadingSize,
     headingTextStyles,
     tableTextStyles,
+    textAlignStyles,
   ]);
 
   return (
