@@ -5,6 +5,7 @@ export function getPdfExportConfig(
   return {
     margin: [15, 15, 15, 15],
     filename,
+    enableLinks: true,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
       scale: 2,

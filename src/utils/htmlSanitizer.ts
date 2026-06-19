@@ -62,6 +62,14 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
           });
         }
 
+        if (tagName === 'a') {
+          ['href', 'title', 'target', 'rel'].forEach((attribute) => {
+            if (sourceEl.hasAttribute(attribute)) {
+              targetEl.setAttribute(attribute, sourceEl.getAttribute(attribute) || '');
+            }
+          });
+        }
+
         // Aplicar estilos base según el tipo de elemento
         if (isSvgElement) {
           Array.from(sourceEl.attributes).forEach((attribute) => {
@@ -146,6 +154,12 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
             page-break-inside: auto;
             break-inside: auto;
             white-space: normal;
+            overflow-wrap: anywhere;
+          `;
+        } else if (tagName === 'a') {
+          targetEl.style.cssText = `
+            color: #2563eb;
+            text-decoration: underline;
             overflow-wrap: anywhere;
           `;
         } else if (tagName === 'blockquote') {
