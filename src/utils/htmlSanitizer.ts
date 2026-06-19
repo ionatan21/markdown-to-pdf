@@ -43,6 +43,7 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
         const targetEl = (isSvgElement
           ? document.createElementNS('http://www.w3.org/2000/svg', sourceEl.tagName)
           : document.createElement(sourceEl.tagName)) as HTMLElement | SVGElement;
+        const tagName = sourceEl.tagName.toLowerCase();
 
         // Copiar solo atributos críticos
         if (sourceEl.hasAttribute('id')) {
@@ -53,9 +54,15 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
           targetEl.setAttribute('class', sourceEl.getAttribute('class') || '');
         }
 
-        // Aplicar estilos base según el tipo de elemento
-        const tagName = sourceEl.tagName.toLowerCase();
+        if (tagName === 'img') {
+          ['src', 'alt', 'title', 'width', 'height'].forEach((attribute) => {
+            if (sourceEl.hasAttribute(attribute)) {
+              targetEl.setAttribute(attribute, sourceEl.getAttribute(attribute) || '');
+            }
+          });
+        }
 
+        // Aplicar estilos base según el tipo de elemento
         if (isSvgElement) {
           Array.from(sourceEl.attributes).forEach((attribute) => {
             targetEl.setAttribute(attribute.name, attribute.value);
@@ -201,6 +208,8 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
             border-top: 2px solid #e5e7eb;
             margin: 18px 0;
           `;
+        } else if (tagName === 'img') {
+          targetEl.style.cssText = getPdfImageStyles(sourceEl as HTMLImageElement);
         } else if (tagName === 'figure' && sourceEl.classList.contains('mermaid-diagram')) {
           targetEl.style.cssText = `
             display: block;
@@ -219,6 +228,10 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
             height: auto;
             overflow: visible;
             vertical-align: top;
+          `;
+        } else if (tagName === 'span' && sourceEl.closest('pre')) {
+          targetEl.style.cssText = `
+            color: ${window.getComputedStyle(sourceEl).color};
           `;
         }
 
@@ -279,6 +292,41 @@ function replaceMermaidSvgsWithImages(container: HTMLElement): void {
 
     svgElement.replaceWith(image);
   });
+}
+
+function getPdfImageStyles(image: HTMLImageElement): string {
+  const computedStyle = window.getComputedStyle(image);
+  const width = toCssLength(image.getAttribute('width')) || computedStyle.width;
+  const height = toCssLength(image.getAttribute('height')) || 'auto';
+  const baseStyles = `
+    display: block;
+    max-width: 100%;
+    width: ${width};
+    height: ${height};
+    border-radius: 6px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  `;
+
+  if (image.classList.contains('right')) {
+    return `${baseStyles} margin-left: auto; margin-right: 0;`;
+  }
+
+  if (image.classList.contains('center')) {
+    return `${baseStyles} margin-left: auto; margin-right: auto;`;
+  }
+
+  return `${baseStyles} margin-left: 0; margin-right: auto;`;
+}
+
+function toCssLength(value: string | null): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 }
 
 function replaceForeignObjectsWithSvgText(svgElement: SVGSVGElement): void {
