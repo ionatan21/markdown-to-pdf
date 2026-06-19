@@ -1,4 +1,8 @@
-export const DEFAULT_MARKDOWN = `# Welcome to Markdown to PDF!
+export const DEFAULT_MARKDOWN = `
+
+<img src="logo-dark.webp" class="left" width="100" alt="Logo de Markdown to PDF">
+
+# Welcome to Markdown to PDF!
 
 ## Why this project exists
 
@@ -17,13 +21,45 @@ Markdown to PDF helps bridge that gap. It lets you write in Markdown, preview th
 - Formatting toolbar for quick markdown insertion
 - Document style controls for typography, sizing, and colors
 - Mermaid diagrams in preview and PDF export
+- HTML images with custom size and positioning classes: \`left\`, \`center\`, and \`right\`
 - Export to PDF
 
 ## Try it out
 
-### Write some markdown here
+### Headings
 
-You can use **bold**, *italic*, \`code\`, and more.
+Use headings to structure reports and documentation.
+
+#### Smaller heading
+
+Headings create a clear hierarchy in both preview and PDF.
+
+### Paragraphs and line breaks
+
+Paragraphs are written as plain text separated by blank lines.
+
+This sentence ends with two spaces.  
+This sentence starts on the next line.
+
+### Emphasis and inline code
+
+You can use **bold text**, *italic text*, and \`inline code\` inside a paragraph.
+
+### Links
+
+Visit [Jonatan Barrios' portfolio](https://portfolio-jonatan-barrios.vercel.app) to see a real link example.
+
+### Images
+
+Markdown images are supported:
+
+![Markdown to PDF logo](ejemplo.webp)
+
+HTML images are also supported when you need custom size or positioning:
+
+<img src="logo-dark.webp" class="center" width="200" alt="Logo de Markdown to PDF">
+
+Available image positioning classes: \`left\`, \`center\`, and \`right\`.
 
 ### Code blocks
 
@@ -44,22 +80,34 @@ flowchart TD
     D --> E
 \`\`\`
 
-### Lists and tables
+### Ordered lists
+
+1. Draft the content
+2. Preview the document
+3. Export the polished PDF
+
+### Unordered lists
 
 - Item 1
 - Item 2
 - Item 3
+
+### Tables
 
 | Feature | Support |
 |---------|---------|
 | Headers | Yes |
 | Lists | Yes |
 | Code | Yes |
+| Images | Yes |
+| Mermaid | Yes |
 | PDF export | Yes |
 
 ### Blockquotes
 
 > Markdown is fast for writing. PDF is clear for sharing.
+
+### Horizontal rules
 
 ---
 
