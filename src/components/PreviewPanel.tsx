@@ -1,8 +1,10 @@
 import type { FC, ReactNode } from 'react';
 import { Children, isValidElement, useCallback, useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import PreviewToolbar from './PreviewToolbar';
+import CodeBlock from './CodeBlock';
 import MermaidDiagram from './MermaidDiagram';
 import { DEFAULT_PREVIEW_THEME } from '../types/previewTheme';
 
@@ -16,8 +18,11 @@ interface MarkdownRendererProps {
   children?: ReactNode;
   className?: string;
   href?: string;
+  height?: number | string;
   src?: string;
   alt?: string;
+  title?: string;
+  width?: number | string;
 }
 
 const isMermaidDiagramElement = (children: ReactNode) => {
@@ -55,6 +60,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   const [theme, setTheme] = useState(DEFAULT_PREVIEW_THEME);
   const [isToolbarExpanded, setIsToolbarExpanded] = useState(true);
   const isToolbarManuallyCollapsedRef = useRef(false);
+  const isToolbarManuallyExpandedRef = useRef(false);
 
   const { fontFamily, fontSize, colors } = theme;
 
@@ -78,6 +84,10 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   const handlePreviewScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const scrollTop = event.currentTarget.scrollTop;
 
+    if (isToolbarManuallyExpandedRef.current) {
+      return;
+    }
+
     if (scrollTop > 96) {
       setIsToolbarExpanded(false);
     } else if (scrollTop < 8 && !isToolbarManuallyCollapsedRef.current) {
@@ -86,6 +96,10 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   };
 
   const handlePreviewWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (isToolbarManuallyExpandedRef.current) {
+      return;
+    }
+
     if (event.deltaY > 0) {
       setIsToolbarExpanded(false);
     }
@@ -93,6 +107,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
 
   const handleToolbarExpandedChange = (nextIsExpanded: boolean) => {
     isToolbarManuallyCollapsedRef.current = !nextIsExpanded;
+    isToolbarManuallyExpandedRef.current = nextIsExpanded;
     setIsToolbarExpanded(nextIsExpanded);
   };
 
@@ -228,6 +243,19 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
       </em>
     ),
     code: ({ children, className }: MarkdownRendererProps) => {
+      const isCodeBlock = className?.startsWith('language-');
+
+      if (isCodeBlock) {
+        return (
+          <CodeBlock
+            className={className}
+            fontSize={fontSize}
+          >
+            {String(children)}
+          </CodeBlock>
+        );
+      }
+
       return (
         <code
           className={`${className || ''} font-mono bg-gray-100 text-red-600 rounded border border-gray-200`.trim()}
@@ -371,11 +399,14 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         }}
       />
     ),
-    img: ({ src, alt }: MarkdownRendererProps) => (
+    img: ({ src, alt, className, title, width, height }: MarkdownRendererProps) => (
       <img
         src={src}
         alt={alt}
-        className="max-w-full h-auto rounded-lg"
+        title={title}
+        width={width}
+        height={height}
+        className={`preview-image ${className || ''}`.trim()}
         style={{
           marginTop: `${fontSize}px`,
           marginBottom: `${fontSize}px`,
@@ -393,7 +424,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   ]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-white">
+    <div className="w-full h-full min-h-0 flex flex-col overflow-hidden bg-white">
       <PreviewToolbar
         theme={theme}
         isExpanded={isToolbarExpanded}
@@ -406,12 +437,13 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         ref={scrollContainerRef}
         onScroll={handlePreviewScroll}
         onWheel={handlePreviewWheel}
-        className="w-full flex-1 overflow-y-auto"
+        className="w-full min-h-0 flex-1 overflow-y-auto overscroll-contain"
       >
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-12 py-6 md:py-12">
           <div className="preview-content" ref={contentRef}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
               components={markdownComponents}
             >
               {markdown}

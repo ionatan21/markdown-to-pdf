@@ -45,9 +45,6 @@ const ToolbarButton: FC<{
   >
     <Icon size={18} />
     {variant === 'dropdown' && <ChevronDown size={14} />}
-    <span className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 delay-200">
-      {label}
-    </span>
   </button>
 );
 
@@ -139,9 +136,6 @@ const HeadingsDropdown: FC<{
       >
         <Heading size={18} />
         <ChevronDown size={12} className="absolute -bottom-0.5 -right-0.5" />
-        <span className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 delay-200">
-          Insert heading
-        </span>
       </button>
 
       {isOpen && createPortal(
@@ -341,12 +335,12 @@ const FormattingToolbar: FC<FormattingToolbarProps> = ({ editorRef }) => {
   return (
     <>
       {/* Desktop and Tablet Toolbar */}
-      <div className="hidden sm:block h-12 bg-white border-b border-gray-200/60 sticky top-0 z-20">
-        <div className="h-full px-4 flex items-center">
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+      <div className="hidden sm:block min-h-12 bg-white border-b border-gray-200/60 sticky top-0 z-20 overflow-visible">
+        <div className="min-h-12 px-3 py-1.5 flex items-center">
+          <div className="flex min-w-0 flex-wrap items-center gap-1 overflow-visible">
 
             {/* Text Formatting Group */}
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               <ToolbarButton icon={Bold} label="Bold (Ctrl+B)" onClick={insertBold} />
               <ToolbarButton icon={Italic} label="Italic (Ctrl+I)" onClick={insertItalic} />
             </div>
@@ -354,14 +348,14 @@ const FormattingToolbar: FC<FormattingToolbarProps> = ({ editorRef }) => {
             <ToolbarSeparator />
 
             {/* Headings Group */}
-            <div className="flex items-center">
+            <div className="flex shrink-0 items-center">
               <HeadingsDropdown onSelect={insertHeading} />
             </div>
 
             <ToolbarSeparator />
 
             {/* Lists Group */}
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               <ToolbarButton icon={List} label="Bullet list" onClick={insertList} />
               <ToolbarButton icon={ListOrdered} label="Numbered list" onClick={insertOrderedList} />
             </div>
@@ -369,7 +363,7 @@ const FormattingToolbar: FC<FormattingToolbarProps> = ({ editorRef }) => {
             <ToolbarSeparator />
 
             {/* Code Group */}
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               <ToolbarButton icon={Code} label="Inline code" onClick={insertCode} />
               <ToolbarButton icon={FileCode} label="Code block" onClick={insertCodeBlock} />
             </div>
@@ -377,7 +371,7 @@ const FormattingToolbar: FC<FormattingToolbarProps> = ({ editorRef }) => {
             <ToolbarSeparator />
 
             {/* Content Group */}
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               <ToolbarButton icon={Link} label="Link" onClick={insertLink} />
               <ToolbarButton icon={Quote} label="Quote" onClick={insertQuote} />
               <ToolbarButton icon={Table} label="Table" onClick={insertTable} />

@@ -43,9 +43,29 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
   onExpandedChange,
 }) => {
   const [activeColorTarget, setActiveColorTarget] = useState<ColorTarget | null>(null);
+  const [toolbarWidth, setToolbarWidth] = useState(0);
+  const toolbarRef = useRef<HTMLDivElement>(null);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const currentFont = fontFamilies.find((font) => font.value === theme.fontFamily) ?? fontFamilies[0];
   const sliderProgress = ((theme.fontSize - 12) / (24 - 12)) * 100;
+  const isCompact = toolbarWidth > 0 && toolbarWidth < 560;
+
+  useEffect(() => {
+    if (!toolbarRef.current) return;
+
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      const nextWidth = Math.round(entry.contentRect.width);
+      setToolbarWidth((currentWidth) => (
+        currentWidth === nextWidth ? currentWidth : nextWidth
+      ));
+    });
+
+    resizeObserver.observe(toolbarRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -99,7 +119,7 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
   };
 
   return (
-    <div className="border-b border-gray-200/70 bg-white">
+    <div ref={toolbarRef} className="shrink-0 border-b border-gray-200/70 bg-white">
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 md:px-12">
         <div className="flex min-h-12 items-center gap-2 py-2">
           <button
@@ -110,11 +130,11 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
             title="Document style"
           >
             <Settings2 size={16} className="shrink-0 text-gray-500" />
-            <span className="truncate">{currentFont.name}</span>
+            <span className={isCompact ? 'sr-only' : 'truncate'}>{currentFont.name}</span>
             <span className="shrink-0 text-gray-400">{theme.fontSize}px</span>
           </button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex min-w-0 items-center gap-1">
             {colorControls.map(({ key, label }) => (
               <span
                 key={key}
@@ -128,7 +148,7 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
           <button
             type="button"
             onClick={resetTheme}
-            className="ml-auto flex h-9 w-9 items-center justify-center rounded text-gray-500 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900"
+            className="ml-auto flex h-9 w-9 shrink-0 items-center justify-center rounded text-gray-500 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900"
             title="Reset document style"
           >
             <RotateCcw size={16} />
@@ -137,7 +157,7 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
           <button
             type="button"
             onClick={() => onExpandedChange(false)}
-            className={`flex h-9 w-9 items-center justify-center rounded text-gray-500 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900 ${
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded text-gray-500 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900 ${
               isExpanded ? 'visible' : 'invisible pointer-events-none'
             }`}
             title="Collapse document style"
@@ -155,8 +175,8 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
           aria-hidden={!isExpanded}
         >
           <div className={`min-h-0 overflow-visible ${isExpanded ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-            <div className="grid gap-4 pb-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div className="grid gap-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(12rem,1fr)]">
+            <div className={`grid gap-4 pb-4 ${isCompact ? '' : 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
+            <div className={`grid gap-3 ${isCompact ? '' : 'sm:grid-cols-[minmax(10rem,12rem)_minmax(12rem,1fr)]'}`}>
               <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
                 <span>Typeface</span>
                 <select
@@ -192,7 +212,7 @@ const PreviewToolbar: FC<PreviewToolbarProps> = ({
               </div>
             </div>
 
-            <div ref={colorPickerRef} className="grid gap-3 sm:grid-cols-3">
+            <div ref={colorPickerRef} className={`grid gap-3 ${isCompact ? '' : 'sm:grid-cols-3'}`}>
               {colorControls.map(({ key, label }) => (
                 <div key={key} className="relative flex flex-col gap-2">
                   <label className="text-xs font-medium text-gray-600">{label}</label>
