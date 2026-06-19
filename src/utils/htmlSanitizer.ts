@@ -39,15 +39,28 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
         target.appendChild(node.cloneNode(true));
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         const sourceEl = node as Element;
-        const targetEl = document.createElement(sourceEl.tagName);
+        const isSvgElement = sourceEl.namespaceURI === 'http://www.w3.org/2000/svg';
+        const targetEl = (isSvgElement
+          ? document.createElementNS('http://www.w3.org/2000/svg', sourceEl.tagName)
+          : document.createElement(sourceEl.tagName)) as HTMLElement | SVGElement;
 
         // Copiar solo atributos críticos
         if (sourceEl.hasAttribute('id')) {
           targetEl.setAttribute('id', sourceEl.getAttribute('id') || '');
         }
 
+        if (sourceEl.hasAttribute('class')) {
+          targetEl.setAttribute('class', sourceEl.getAttribute('class') || '');
+        }
+
         // Aplicar estilos base según el tipo de elemento
         const tagName = sourceEl.tagName.toLowerCase();
+
+        if (isSvgElement) {
+          Array.from(sourceEl.attributes).forEach((attribute) => {
+            targetEl.setAttribute(attribute.name, attribute.value);
+          });
+        }
 
         if (tagName === 'pre') {
           // Incrementar espacio disponible para page breaks
@@ -188,6 +201,25 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
             border-top: 2px solid #e5e7eb;
             margin: 18px 0;
           `;
+        } else if (tagName === 'figure' && sourceEl.classList.contains('mermaid-diagram')) {
+          targetEl.style.cssText = `
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            margin: 16px 0;
+            text-align: center;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            overflow: visible;
+          `;
+        } else if (tagName === 'svg') {
+          targetEl.style.cssText = `
+            display: inline-block;
+            max-width: 100%;
+            height: auto;
+            overflow: visible;
+            vertical-align: top;
+          `;
         }
 
         const targetHtmlElement = targetEl as HTMLElement;
@@ -211,8 +243,80 @@ export function createSimplifiedCloneForPdf(container: HTMLElement): HTMLElement
   };
 
   copyWithSimplifiedStyles(container, clone);
+  replaceMermaidSvgsWithImages(clone);
 
   return clone;
+}
+
+function replaceMermaidSvgsWithImages(container: HTMLElement): void {
+  container.querySelectorAll('.mermaid-diagram svg').forEach((svg) => {
+    const svgElement = svg as SVGSVGElement;
+    svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    replaceForeignObjectsWithSvgText(svgElement);
+
+    const serializedSvg = new XMLSerializer().serializeToString(svgElement);
+    const image = document.createElement('img');
+
+    image.src = `data:image/svg+xml;base64,${encodeBase64(serializedSvg)}`;
+    image.alt = 'Mermaid diagram';
+    image.style.cssText = `
+      display: inline-block;
+      max-width: 100%;
+      height: auto;
+      vertical-align: top;
+    `;
+
+    const width = svgElement.getAttribute('width');
+    const height = svgElement.getAttribute('height');
+
+    if (width) {
+      image.setAttribute('width', width);
+    }
+
+    if (height) {
+      image.setAttribute('height', height);
+    }
+
+    svgElement.replaceWith(image);
+  });
+}
+
+function replaceForeignObjectsWithSvgText(svgElement: SVGSVGElement): void {
+  svgElement.querySelectorAll('foreignObject').forEach((foreignObject) => {
+    const label = foreignObject.textContent?.trim();
+
+    if (!label) {
+      foreignObject.remove();
+      return;
+    }
+
+    const width = Number(foreignObject.getAttribute('width')) || 0;
+    const height = Number(foreignObject.getAttribute('height')) || 0;
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+    text.setAttribute('x', `${width / 2}`);
+    text.setAttribute('y', `${height / 2}`);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'central');
+    text.setAttribute('font-family', 'Arial, Helvetica, sans-serif');
+    text.setAttribute('font-size', '16');
+    text.setAttribute('font-weight', '400');
+    text.setAttribute('fill', '#111827');
+
+    text.textContent = label;
+    foreignObject.replaceWith(text);
+  });
+}
+
+function encodeBase64(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return window.btoa(binary);
 }
 
 function shouldPreserveDocumentTypography(tagName: string): boolean {
@@ -231,6 +335,9 @@ function shouldPreserveDocumentTypography(tagName: string): boolean {
     'ul',
     'ol',
     'li',
+    'figure',
+    'figcaption',
+    'svg',
     'table',
     'thead',
     'tbody',
@@ -297,7 +404,7 @@ function getFollowingContentHeight(heading: HTMLElement): number {
 }
 
 function keepShortBlocksInsidePage(container: HTMLElement): boolean {
-  const blocks = Array.from(container.querySelectorAll('p, li, blockquote, pre, table'));
+  const blocks = Array.from(container.querySelectorAll('p, li, blockquote, pre, table, figure'));
   const containerTop = container.getBoundingClientRect().top;
   let changed = false;
 

@@ -55,6 +55,9 @@ export const useScrollSync = ({ editorRef, previewRef, syncKey }: ScrollSync) =>
 
       const scrollPercentage = clampPercentage(previewScrollTop / previewScrollHeight);
       const editorScrollHeight = editor.getScrollHeight() - editor.getLayoutInfo().height;
+
+      if (editorScrollHeight <= 0) return;
+
       const editorScrollTop = scrollPercentage * editorScrollHeight;
 
       syncingRef.current = true;

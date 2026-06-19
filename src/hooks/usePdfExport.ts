@@ -19,6 +19,38 @@ interface UsePdfExportReturn {
   handleExport: () => Promise<void>;
 }
 
+const MERMAID_RENDER_TIMEOUT_MS = 5000;
+
+function getPendingMermaidDiagrams(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>('.mermaid-diagram[data-mermaid-status="loading"]')
+  );
+}
+
+function hasRenderedMermaidCodeFallback(container: HTMLElement): boolean {
+  return container.querySelectorAll('pre code.language-mermaid').length > 0;
+}
+
+async function waitForMermaidDiagrams(container: HTMLElement): Promise<void> {
+  if (!container.querySelector('.mermaid-diagram')) {
+    return;
+  }
+
+  const startedAt = Date.now();
+
+  while (getPendingMermaidDiagrams(container).length > 0) {
+    if (Date.now() - startedAt > MERMAID_RENDER_TIMEOUT_MS) {
+      throw new Error('Mermaid diagrams are still rendering');
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 100));
+  }
+
+  if (hasRenderedMermaidCodeFallback(container)) {
+    throw new Error('Mermaid code block was not converted before export');
+  }
+}
+
 export function usePdfExport({
   markdown,
   previewContentRef,
@@ -53,6 +85,8 @@ export function usePdfExport({
       if (!previewContent) {
         throw new Error('Preview content not found');
       }
+
+      await waitForMermaidDiagrams(previewContent);
 
       const sanitizedClone = createSimplifiedCloneForPdf(previewContent);
       document.body.appendChild(sanitizedClone);

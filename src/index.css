@@ -305,6 +305,44 @@ body {
   margin-bottom: 1rem;
 }
 
+.preview-content .mermaid-diagram {
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(100vh - 12rem);
+  overflow: auto;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.preview-content .mermaid-diagram svg {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.preview-content .mermaid-diagram-error {
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  background-color: #fef2f2;
+  color: #991b1b;
+  text-align: left;
+}
+
+.preview-content .mermaid-diagram-error figcaption {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.preview-content .mermaid-diagram-error pre {
+  margin: 0;
+  color: #1f2937;
+  background-color: #ffffff;
+  border-color: #fecaca;
+}
+
 /* PDF Page Break Rules - Prevent text from being cut horizontally */
 .preview-content h1,
 .preview-content h2,

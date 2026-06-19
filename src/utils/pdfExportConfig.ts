@@ -28,7 +28,7 @@ export function getPdfExportConfig(
     },
     pagebreak: {
       mode: ['css', 'legacy'] as const,
-      avoid: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr'],
+      avoid: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr', 'figure', '.mermaid-diagram'],
       before: undefined,
       after: undefined,
     },

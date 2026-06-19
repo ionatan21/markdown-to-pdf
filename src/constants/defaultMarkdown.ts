@@ -16,6 +16,7 @@ Markdown to PDF helps bridge that gap. It lets you write in Markdown, preview th
 - Resizable panels with draggable divider
 - Formatting toolbar for quick markdown insertion
 - Document style controls for typography, sizing, and colors
+- Mermaid diagrams in preview and PDF export
 - Export to PDF
 
 ## Try it out
@@ -30,6 +31,17 @@ You can use **bold**, *italic*, \`code\`, and more.
 function hello() {
   console.log('Hello, World!');
 }
+\`\`\`
+
+### Mermaid diagrams
+
+\`\`\`mermaid
+flowchart TD
+    A[Start] --> B{Need a diagram?}
+    B -- Yes --> C[Write Mermaid]
+    B -- No --> D[Keep writing]
+    C --> E[Export polished PDF]
+    D --> E
 \`\`\`
 
 ### Lists and tables

@@ -1,8 +1,9 @@
 import type { FC, ReactNode } from 'react';
-import { useRef, useState } from 'react';
+import { Children, isValidElement, useCallback, useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import PreviewToolbar from './PreviewToolbar';
+import MermaidDiagram from './MermaidDiagram';
 import { DEFAULT_PREVIEW_THEME } from '../types/previewTheme';
 
 interface PreviewPanelProps {
@@ -13,10 +14,38 @@ interface PreviewPanelProps {
 
 interface MarkdownRendererProps {
   children?: ReactNode;
+  className?: string;
   href?: string;
   src?: string;
   alt?: string;
 }
+
+const isMermaidDiagramElement = (children: ReactNode) => {
+  const childArray = Children.toArray(children);
+
+  return childArray.length === 1
+    && isValidElement(childArray[0])
+    && childArray[0].type === MermaidDiagram;
+};
+
+const getMermaidChartFromPre = (children: ReactNode): string | null => {
+  const childArray = Children.toArray(children);
+
+  if (childArray.length !== 1 || !isValidElement<{ className?: string; children?: ReactNode }>(childArray[0])) {
+    return null;
+  }
+
+  const codeElement = childArray[0];
+  const className = codeElement.props.className || '';
+  const languageMatch = /language-(\w+)/.exec(className);
+  const language = languageMatch?.[1]?.toLowerCase();
+
+  if (language !== 'mermaid') {
+    return null;
+  }
+
+  return String(codeElement.props.children).replace(/\n$/, '');
+};
 
 const PreviewPanel: FC<PreviewPanelProps> = ({
   markdown,
@@ -30,21 +59,21 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   const { fontFamily, fontSize, colors } = theme;
 
   // Base typography styles that will be applied to all text elements
-  const baseTextStyles = {
+  const baseTextStyles = useMemo(() => ({
     fontFamily,
     fontSize: `${fontSize}px`,
     color: colors.body,
-  };
+  }), [colors.body, fontFamily, fontSize]);
 
-  const headingTextStyles = {
+  const headingTextStyles = useMemo(() => ({
     ...baseTextStyles,
     color: colors.heading,
-  };
+  }), [baseTextStyles, colors.heading]);
 
-  const tableTextStyles = {
+  const tableTextStyles = useMemo(() => ({
     ...baseTextStyles,
     color: colors.table,
-  };
+  }), [baseTextStyles, colors.table]);
 
   const handlePreviewScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const scrollTop = event.currentTarget.scrollTop;
@@ -68,12 +97,12 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
   };
 
   // Scale factors for different heading levels
-  const getHeadingSize = (level: number) => {
+  const getHeadingSize = useCallback((level: number) => {
     const scales = { 1: 2.5, 2: 2, 3: 1.5, 4: 1.25, 5: 1.125, 6: 1 };
     return `${fontSize * scales[level as keyof typeof scales]}px`;
-  };
+  }, [fontSize]);
 
-  const markdownComponents = {
+  const markdownComponents = useMemo(() => ({
     h1: ({ children }: MarkdownRendererProps) => (
       <h1
         className="font-bold mt-8 mb-4"
@@ -198,30 +227,49 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         {children}
       </em>
     ),
-    code: ({ children }: MarkdownRendererProps) => (
-      <code
-        className="font-mono bg-gray-100 text-red-600 rounded border border-gray-200"
-        style={{
-          fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-          fontSize: `${fontSize * 0.875}px`,
-          padding: `${fontSize * 0.09375}px ${fontSize * 0.15625}px`,
-        }}
-      >
-        {children}
-      </code>
-    ),
-    pre: ({ children }: MarkdownRendererProps) => (
-      <pre
-        className="bg-gray-900 text-gray-100 rounded-lg overflow-x-auto border border-gray-700"
-        style={{
-          padding: `${fontSize}px`,
-          marginTop: `${fontSize}px`,
-          marginBottom: `${fontSize}px`,
-        }}
-      >
-        {children}
-      </pre>
-    ),
+    code: ({ children, className }: MarkdownRendererProps) => {
+      return (
+        <code
+          className={`${className || ''} font-mono bg-gray-100 text-red-600 rounded border border-gray-200`.trim()}
+          style={{
+            fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+            fontSize: `${fontSize * 0.875}px`,
+            padding: `${fontSize * 0.09375}px ${fontSize * 0.15625}px`,
+          }}
+        >
+          {children}
+        </code>
+      );
+    },
+    pre: ({ children }: MarkdownRendererProps) => {
+      const mermaidChart = getMermaidChartFromPre(children);
+
+      if (mermaidChart) {
+        return (
+          <MermaidDiagram
+            chart={mermaidChart}
+            fontSize={fontSize}
+          />
+        );
+      }
+
+      if (isMermaidDiagramElement(children)) {
+        return <>{children}</>;
+      }
+
+      return (
+        <pre
+          className="bg-gray-900 text-gray-100 rounded-lg overflow-x-auto border border-gray-700"
+          style={{
+            padding: `${fontSize}px`,
+            marginTop: `${fontSize}px`,
+            marginBottom: `${fontSize}px`,
+          }}
+        >
+          {children}
+        </pre>
+      );
+    },
     blockquote: ({ children }: MarkdownRendererProps) => (
       <blockquote
         className="border-l-4 border-blue-500 italic"
@@ -334,7 +382,15 @@ const PreviewPanel: FC<PreviewPanelProps> = ({
         }}
       />
     ),
-  };
+  }), [
+    baseTextStyles,
+    colors.table,
+    fontFamily,
+    fontSize,
+    getHeadingSize,
+    headingTextStyles,
+    tableTextStyles,
+  ]);
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
